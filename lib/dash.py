@@ -1,0 +1,34 @@
+import tkinter as tk
+import tkinter.font as tkfont
+import lib.weather_panel as wp
+import lib.menu_bar as menu
+import lib.get_data as data
+
+
+class App:
+    def __init__(self):
+        self.api_key = "1d67d07f578f4c48a4e92303222606"
+        self.location = 21076
+        self.data = data.Data(self)
+        print(self.data.data)
+        self.window = tk.Tk()
+        self.window.title("SplashDash")
+        self.font = tkfont.Font(family="Consolas", size=10, weight="normal")
+        self.m_len = self.font.measure('0')
+        self.m_height = tkfont.Font(font='Consolas').metrics('linespace')
+        self.app_w = round((self.window.winfo_screenwidth() / self.m_len) / 3)
+        self.app_h = round(((self.window.winfo_screenheight() / self.m_height) / 3) * 1.1)
+        self.set_window_size()
+        self.menu = menu.Menu(self)
+        self.main_panel = tk.Frame(self.window, bg="green3")
+        self.main_panel.pack(fill=tk.BOTH, expand=1)
+        self.w_main = wp.Weather_Lg(self)
+
+
+
+    def set_window_size(self):
+        self.window.geometry(f"{int(self.window.winfo_screenwidth() / 3) + 10}x{int(self.window.winfo_screenheight() / 3)}")
+        self.window.lift()
+        #self.window.resizable(False, False)
+
+
