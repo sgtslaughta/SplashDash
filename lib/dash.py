@@ -7,11 +7,13 @@ import lib.get_data as data
 
 class App:
     def __init__(self):
+        self.window = tk.Tk()
         self.api_key = "1d67d07f578f4c48a4e92303222606"
+        self.api_key_val = tk.StringVar()
         self.location = 21076
+        self.location_var = tk.StringVar()
         self.data = data.Data(self)
         print(self.data.data)
-        self.window = tk.Tk()
         self.window.title("SplashDash")
         self.font = tkfont.Font(family="Consolas", size=10, weight="normal")
         self.m_len = self.font.measure('0')
@@ -24,7 +26,8 @@ class App:
         self.main_panel.pack(fill=tk.BOTH, expand=1)
         self.w_main = wp.Weather_Lg(self)
 
-
+    def kill_app(self):
+        self.window.destroy()
 
     def set_window_size(self):
         self.window.geometry(f"{int(self.window.winfo_screenwidth() / 3) + 10}x{int(self.window.winfo_screenheight() / 3)}")

@@ -1,6 +1,6 @@
 import tkinter as tk
 from datetime import datetime, date
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageColor
 import os.path
 
 
@@ -8,14 +8,21 @@ class Weather_Lg:
     def __init__(self, app):
         self.w_panel = tk.Frame(app.main_panel, bg="black")
         self.w_panel.pack(fill=tk.BOTH, expand=1)
+
+        # Create weather icon section
         self.icon_frame = tk.Frame(self.w_panel, bg="blue2")
         self.icon_frame.grid(row=0, column=0, padx=5, pady=5)
-        img = Image.open(os.path('img/001lighticons-08.png'))
-        new_img = img.resize((int(app.window.winfo_screenwidth() / 4.5), int(app.window.winfo_screenheight() / 3.5)))
+        self.icon_canvas = tk.Canvas(self.icon_frame, bg="DeepSkyBlue2")
+        self.icon_canvas.pack(fill=tk.BOTH, expand=1)
+
+        cwd = os.getcwd()
+        img = Image.open(os.path.join(cwd, 'lib/img/001lighticons-08.png'))
+        new_img = img.resize((int(app.window.winfo_screenwidth() / 5), int(app.window.winfo_screenheight() / 3.5)))
         self.w_icon = ImageTk.PhotoImage(new_img)
-        self.p_holder = tk.Label(self.icon_frame, image=self.w_icon)
-        #width=int(app.app_w * .74), height=int(app.app_h * .90)
-        self.p_holder.pack(fill=tk.BOTH, expand=1)
+        self.icon_canvas.create_image(200, 140, image=self.w_icon)
+        #self.p_holder = tk.Label(self.icon_frame, image=self.w_icon)
+        #width = int(app.app_w * .74), height=int(app.app_h * .90)
+        #self.p_holder.pack(fill=tk.BOTH, expand=1)
         self.data_frame = tk.Frame(self.w_panel)
         self.data_frame.grid(row=0, column=1)
 
