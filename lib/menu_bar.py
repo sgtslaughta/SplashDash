@@ -1,5 +1,7 @@
 import tkinter as tk
 from re import match
+import webbrowser
+from .common import get_web_image
 
 
 class Menu:
@@ -20,7 +22,7 @@ class Menu:
         self.edit_menu.add_command(label="Add API Key", command=lambda: [self.get_api(app)])
         self.edit_menu.add_command(label="Open Detailed Info...")
         self.file_menu.add_command(label="Quit", command=lambda: [app.kill_app()])
-        self.about_menu.add_command(label="About...")
+        self.about_menu.add_command(label="About...", command=lambda: [self.open_about()])
 
         # Add drop-downs to main menu bar
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
@@ -42,6 +44,10 @@ class Menu:
     # Create the location entry window
     def get_loc(self):
         LocWin(self)
+
+    # Open About
+    def open_about(self):
+        About(self)
 
 
 class ApiEntry:
@@ -118,10 +124,10 @@ class LocWin:
         self.ok_button.grid(row=0, column=0, sticky=tk.W)
         self.cancel_but.grid(row=0, column=1, sticky=tk.E)
 
-        # Check entry agains regex to validate ZIP code format
+        # Check entry against regex to validate ZIP code format
         self.check_zip()
 
-    # Check entry agains regex to validate ZIP code format, enable OK button if valid
+    # Check entry against regex to validate ZIP code format, enable OK button if valid
     def check_zip(self):
         if match("^[0-9]{5}", self.loc_entry.get()):
             self.ok_button.config(state=tk.NORMAL)
@@ -131,3 +137,34 @@ class LocWin:
     def set_loc(self):
         self.menu.app.location_var.set(self.loc_entry.get())
         self.p_win.destroy()
+
+
+# Open a new tab in the default browser to url
+def callback(url):
+    webbrowser.open_new_tab(url)
+
+
+class About:
+    def __init__(self, menu):
+        self.menu = menu
+
+        # Create the About window
+        self.p_win = tk.Toplevel()
+        self.p_win.title("About")
+        self.p_win.lift()
+
+        # Create the credit frame
+        self.credit_frame = tk.Frame(self.p_win)
+        self.credit_frame.grid(row=0, column=0, padx=10, pady=10)
+
+        self.credit_label = tk.Label(self.credit_frame, text="API calls made available by: ", font='Helvetica 12 italic')
+        self.credit_label.grid(row=0, column=0, padx=5)
+        # Get the image from the web // BROKE SOMEHOW
+        self.img = get_web_image("https://cdn.weatherapi.com/v4/images/weatherapi_logo.png")
+        self.w_api_img_label = tk.Label(self.credit_frame, image=self.img, cursor="hand2")
+        self.w_api_img_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+        self.w_api_img_label.bind("<Button-1>", lambda e: [callback("https://www.weatherapi.com/")])
+        # Create the url link
+        self.w_api_credit = tk.Label(self.credit_frame, text="https://www.weatherapi.com/", fg="blue", cursor="hand2")
+        self.w_api_credit.grid(row=1, column=1, padx=5, pady=5)
+        self.w_api_credit.bind("<Button-1>", lambda e: [callback("https://www.weatherapi.com/")])

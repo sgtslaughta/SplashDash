@@ -4,7 +4,6 @@ import tkinter.font as tkfont
 import lib.weather_panel as wp
 import lib.menu_bar as menu
 import lib.get_data as data
-from os import getcwd, path
 
 
 class App:
@@ -14,8 +13,8 @@ class App:
         self.api_key_val = tk.StringVar()
         self.location = 21076
         self.location_var = tk.StringVar()
-        self.data = data.Data(self)
-        #print(self.data.data)
+        self.wdata = data.WData(self)
+        # print(self.data.data)
         self.window.title("SplashDash")
         self.cwd = os.getcwd()
         self.window.iconphoto(False, tk.PhotoImage(file=os.path.join(self.cwd, 'lib/img/weather.png')))
@@ -36,6 +35,4 @@ class App:
     def set_window_size(self):
         self.window.geometry(f"{int(self.window.winfo_screenwidth() / 3) + 10}x{int(self.window.winfo_screenheight() / 3)}")
         self.window.lift()
-        #self.window.resizable(False, False)
-
-
+        # self.window.resizable(False, False)

@@ -1,8 +1,6 @@
 import tkinter as tk
 from datetime import datetime, date
-
-import PIL.ImageOps
-from PIL import ImageTk, Image, ImageColor
+from PIL import ImageTk, Image
 import os.path
 
 
@@ -53,7 +51,7 @@ class Weather_Lg:
 
         # Create the real feel section
         self.real_feel_var = tk.StringVar()
-        self.real_feel_var.set(str(app.data.real_feel) + "°F")
+        self.real_feel_var.set(str(app.wdata.weather_now.real_feel) + "°F")
         self.real_feel_frame = tk.Frame(self.data_frame)
         self.real_feel_label = tk.Label(self.real_feel_frame, text="Real Feel: ")
         self.real_feel_data = tk.Label(self.real_feel_frame, text=self.real_feel_var.get())
