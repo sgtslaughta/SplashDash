@@ -1,8 +1,10 @@
+import os
 import tkinter as tk
 import tkinter.font as tkfont
 import lib.weather_panel as wp
 import lib.menu_bar as menu
 import lib.get_data as data
+from os import getcwd, path
 
 
 class App:
@@ -13,8 +15,10 @@ class App:
         self.location = 21076
         self.location_var = tk.StringVar()
         self.data = data.Data(self)
-        print(self.data.data)
+        #print(self.data.data)
         self.window.title("SplashDash")
+        self.cwd = os.getcwd()
+        self.window.iconphoto(False, tk.PhotoImage(file=os.path.join(self.cwd, 'lib/img/weather.png')))
         self.font = tkfont.Font(family="Consolas", size=10, weight="normal")
         self.m_len = self.font.measure('0')
         self.m_height = tkfont.Font(font='Consolas').metrics('linespace')
