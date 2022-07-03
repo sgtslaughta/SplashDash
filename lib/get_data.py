@@ -1,12 +1,11 @@
 import requests
-from datetime import datetime
 
 loc = 21076
 api = "1d67d07f578f4c48a4e92303222606"
 r = requests.get(f"http://api.weatherapi.com/v1/current.json?key={api}&q={loc}&aqi=no")
 data = r.json()
 
-
+# General API data
 class Data:
     def __init__(self, app):
         self.app = app
@@ -27,6 +26,7 @@ class Data:
         self.current = self.data['current']
 
 
+# The current weather
 class WNow:
     def __init__(self, app):
         self.data = app['current']
@@ -43,6 +43,7 @@ class WNow:
         self.uv = self.data['uv']
 
 
+# Hourly forcast
 class ForcastTday:
     def __init__(self, app):
         self.data = app['forecast']['forecastday'][0]
@@ -60,7 +61,7 @@ class ForcastTday:
         self.moonset = self.astro['moonset']
         self.moon_phase = self.astro['moon_phase']
 
-        print(self.data['hour'][0])
+        print(app['forecast']['forecastday'][1])
 
 
 class WData:
