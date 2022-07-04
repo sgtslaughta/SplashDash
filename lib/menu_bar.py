@@ -64,7 +64,7 @@ class ApiEntry:
 
         # Create the main frame
         self.entry_frame = tk.Frame(self.p_win)
-        self.entry_frame.grid(row=0)
+        self.entry_frame.grid(row=0, column=0)
 
         # Create the Label and Entry frames
         self.api_label = tk.Label(self.entry_frame, text="API Key: ")
@@ -73,25 +73,24 @@ class ApiEntry:
         self.api_entry.grid(row=0, column=1, padx=10, pady=10)
 
         # Create the button frame and objects
-        self.but_p_frame = tk.Frame(self.p_win)
-        self.but_p_frame.grid(row=1, columnspan=1, sticky=tk.E+tk.W)
-        self.but_frame = tk.Frame(self.but_p_frame, bg="red")
-        self.but_frame.pack(fill=tk.BOTH, expand=1)
-        self.ok_button = tk.Button(self.but_frame, text="OK", state=tk.DISABLED, command=lambda: [self.set_api()])
-        self.cancel_but = tk.Button(self.but_frame, text="Cancel", command=self.p_win.destroy)
-        self.ok_button.grid(row=0, column=0, sticky=tk.W)
-        self.cancel_but.grid(row=0, column=1, sticky=tk.E)
+        w = self.p_win.winfo_screenwidth() / app.m_len
+        self.b_frame = tk.Frame(self.p_win, bg='red')
+        self.b_frame.grid(row=1, column=0, sticky='ew')
+        self.ok_button = tk.Button(self.b_frame, text="OK", width=int(w / 16), state=tk.DISABLED, command=lambda: [self.set_api()])
+        self.cancel_but = tk.Button(self.b_frame, text="Cancel", width=int(w / 16), command=self.p_win.destroy)
+        self.ok_button.grid(row=0, column=0, sticky='ew')
+        self.cancel_but.grid(row=0, column=1, sticky='ew')
 
         # Validate proper API format
         self.check_api()
 
-    # Function to get API from entry and set value, close window
     def set_api(self):
+        """Function to get API from entry widget and set value to dash.api_key_val, close window"""
         self.app.api_key_val.set(self.api_entry.get())
         self.p_win.destroy()
 
-    # Function to check the API format against regex, enable OK button once correct
     def check_api(self):
+        """Function to check the API format against regex, enable OK button once correct"""
         if match("^[a-zA-Z0-9]{30}", self.api_entry.get()):
             self.ok_button.config(state=tk.NORMAL)
         self.ok_button.after(500, self.check_api)
@@ -130,14 +129,14 @@ class LocWin:
         # Check entry against regex to validate ZIP code format
         self.check_zip()
 
-    # Check entry against regex to validate ZIP code format, enable OK button if valid
     def check_zip(self):
+        """Check entry against regex to validate ZIP code format, enable OK button if valid"""
         if match("^[0-9]{5}", self.loc_entry.get()):
             self.ok_button.config(state=tk.NORMAL)
         self.ok_button.after(500, self.check_zip)
 
-    # Get the ZIP code from the entry form and set it to variable, close window
     def set_loc(self):
+        """Get the ZIP code from the entry form and set it to variable, close window"""
         self.menu.app.location_var.set(self.loc_entry.get())
         self.p_win.destroy()
 

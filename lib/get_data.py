@@ -42,6 +42,7 @@ class WNow:
         self.real_feel = self.data['feelslike_f']
         self.vis_m = self.data['vis_miles']
         self.uv = self.data['uv']
+        self.is_day = self.data['is_day']
 
 
 class ForcastTday:

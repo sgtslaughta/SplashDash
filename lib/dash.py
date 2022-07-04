@@ -28,7 +28,7 @@ class App:
         self.menu = menu.Menu(self)
         self.main_panel = tk.Frame(self.window, bg="green3")
         self.main_panel.pack(fill=tk.BOTH, expand=1)
-        self.w_main = wp.Weather_Lg(self)
+        self.w_main = wp.ConstructWPanel(self)
 
     def kill_app(self):
         """Close the whole app"""

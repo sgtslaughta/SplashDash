@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 import os.path
 
 
-class Weather_Lg:
+class MainWeather:
     """Main weather panel class"""
     def __init__(self, app):
         self.w_panel = tk.Frame(app.main_panel, highlightbackground="black", highlightthickness=1)
