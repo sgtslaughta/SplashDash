@@ -4,7 +4,7 @@ import os
 
 
 def get_web_image(url="http://someimage.png"):
-    """Pull an image from a given URL and set it to a ImageTK.Photoimage object"""
+    """Pull an image from a given URL and set it to a ImageTK.PhotoImage object"""
     img = Image.open(requests.get(url, stream=True).raw)
     cwd = os.getcwd()
     url_fn = url.split('/')
