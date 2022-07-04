@@ -5,8 +5,9 @@ api = "1d67d07f578f4c48a4e92303222606"
 r = requests.get(f"http://api.weatherapi.com/v1/current.json?key={api}&q={loc}&aqi=no")
 data = r.json()
 
-# General API data
+
 class Data:
+    """General API and location data"""
     def __init__(self, app):
         self.app = app
         self.loc = app.location
@@ -26,8 +27,8 @@ class Data:
         self.current = self.data['current']
 
 
-# The current weather
 class WNow:
+    """The current weather summary"""
     def __init__(self, app):
         self.data = app['current']
         self.temp_c = self.data['temp_c']
@@ -43,8 +44,8 @@ class WNow:
         self.uv = self.data['uv']
 
 
-# Hourly forcast
 class ForcastTday:
+    """Overview of today's forcast"""
     def __init__(self, app):
         self.data = app['forecast']['forecastday'][0]
         self.astro = self.data['astro']
@@ -61,14 +62,35 @@ class ForcastTday:
         self.moonset = self.astro['moonset']
         self.moon_phase = self.astro['moon_phase']
 
-        print(app['forecast']['forecastday'][1])
+
+class HourlyW:
+    """Get the hourly weather data, max three days (day:0 = today, hr:10 = 10:00)"""
+    def __init__(self, app, day=0, hr=0):
+        self.h_data = app['forecast']['forecastday'][day]['hour'][hr]
+        self.r_time = self.h_data['time']
+        self.temp_f = self.h_data['temp_f']
+        self.is_day = self.h_data['is_day']
+        self.w_summary = self.h_data['condition']['text']
+        self.w_icon = self.h_data['condition']['icon']
+        self.wind_mph = self.h_data['wind_mph']
+        self.precip_in = self.h_data['precip_in']
+        self.humidity = self.h_data['humidity']
+        self.feelslike_f = self.h_data['feelslike_f']
+        self.heatindex_f = self.h_data['heatindex_f']
+        self.chance_of_rain = self.h_data['chance_of_rain']
+        self.chance_of_snow = self.h_data['chance_of_snow']
+        self.vis_miles = self.h_data['vis_miles']
+        self.gust_mph = self.h_data['gust_mph']
+        self.uv = self.h_data['uv']
 
 
 class WData:
+    """Access to the main classes, call hourly data via \"HourlyW\""""
     def __init__(self, app):
         self.gen_data = Data(app)
         self.weather_now = WNow(self.gen_data.data)
         self.forcast_today = ForcastTday(self.gen_data.data)
+
 
 
 

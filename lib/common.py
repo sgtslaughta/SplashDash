@@ -1,9 +1,15 @@
 import requests
 from PIL import Image, ImageTk
-from io import BytesIO
+import os
 
 
-def get_web_image(url):
-    u = requests.get(url)
-    image = ImageTk.PhotoImage(Image.open(BytesIO(u.content)))
+def get_web_image(url="http://someimage.png"):
+    """Pull an image from a given URL and set it to a ImageTK.Photoimage object"""
+    img = Image.open(requests.get(url, stream=True).raw)
+    cwd = os.getcwd()
+    url_fn = url.split('/')
+    img.save(f"{cwd}/lib/img/tmp/{url_fn[-1]}")
+    image = ImageTk.PhotoImage(img)
+    if os.path.exists(f"{cwd}/lib/img/tmp/{url_fn[-1]}"):
+        os.remove(f"{cwd}/lib/img/tmp/{url_fn[-1]}")
     return image

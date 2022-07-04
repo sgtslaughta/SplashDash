@@ -5,6 +5,7 @@ from .common import get_web_image
 
 
 class Menu:
+    """Instantiate the menu and menu functions"""
     def __init__(self, app):
         self.app = app
 
@@ -51,6 +52,7 @@ class Menu:
 
 
 class ApiEntry:
+    """Create the API entry window"""
     def __init__(self, menu, app):
 
         # Set variables and create pop up window
@@ -96,6 +98,7 @@ class ApiEntry:
 
 
 class LocWin:
+    """Create the location entry window"""
     def __init__(self, menu):
         # Set variables and create pop up window
         self.menu = menu
@@ -139,12 +142,13 @@ class LocWin:
         self.p_win.destroy()
 
 
-# Open a new tab in the default browser to url
-def callback(url):
+def callback(url="URL"):
+    """Opens a url in default browser"""
     webbrowser.open_new_tab(url)
 
 
 class About:
+    """Create the about screen"""
     def __init__(self, menu):
         self.menu = menu
 

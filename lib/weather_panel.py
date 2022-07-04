@@ -5,6 +5,7 @@ import os.path
 
 
 class Weather_Lg:
+    """Main weather panel class"""
     def __init__(self, app):
         self.w_panel = tk.Frame(app.main_panel, highlightbackground="black", highlightthickness=1)
         self.w_panel.pack(fill=tk.BOTH, expand=1)
