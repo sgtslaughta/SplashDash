@@ -9,7 +9,10 @@ import lib.get_data as data
 class App:
     """Main app constructor"""
     def __init__(self):
+        self.mode_bg = 'grey13'
+        self.mode_fg = 'cyan2'
         self.window = tk.Tk()
+        self.window.tk_setPalette(background=self.mode_bg, foreground=self.mode_fg)
         self.api_key = "1d67d07f578f4c48a4e92303222606"
         self.api_key_val = tk.StringVar()
         self.location = 21076

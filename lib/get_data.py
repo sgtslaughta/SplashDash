@@ -1,4 +1,5 @@
 import requests
+import tkinter as tk
 
 loc = 21076
 api = "1d67d07f578f4c48a4e92303222606"
@@ -17,29 +18,29 @@ class Data:
         self.req = requests.get(self.api_url)
         self.data = self.req.json()
         self.location = self.data['location']
-        self.city = self.data['location']['name']
+        self.city = tk.StringVar(app.window, self.data['location']['name'])
         self.state = self.data['location']['region']
         self.country = self.data['location']['country']
         self.lat = self.data['location']['lat']
         self.lon = self.data['location']['lon']
         self.time_z = self.data['location']['tz_id']
-        self.loc_time = self.data['location']['localtime']
+        self.loc_time = tk.StringVar(app.window, self.data['location']['localtime'])
         self.current = self.data['current']
 
 
 class WNow:
     """The current weather summary"""
-    def __init__(self, app):
+    def __init__(self, main, app):
         self.data = app['current']
         self.temp_c = self.data['temp_c']
-        self.temp_f = self.data['temp_f']
-        self.condition = self.data['condition']['text']
+        self.temp_f = tk.StringVar(main.window, str(self.data['temp_f']) + '°F')
+        self.condition = tk.StringVar(main.window, self.data['condition']['text'])
         self.icon_loc = self.data['condition']['icon']
         self.wind = self.data['wind_mph']
         self.wind_dir = self.data['wind_dir']
         self.precip = self.data['precip_in']
         self.humidity = self.data['humidity']
-        self.real_feel = self.data['feelslike_f']
+        self.real_feel = tk.StringVar(main.window, str(self.data['feelslike_f']) + '°F')
         self.vis_m = self.data['vis_miles']
         self.uv = self.data['uv']
         self.is_day = self.data['is_day']
@@ -47,7 +48,7 @@ class WNow:
 
 class ForcastTday:
     """Overview of today's forcast"""
-    def __init__(self, app):
+    def __init__(self, main, app):
         self.data = app['forecast']['forecastday'][0]
         self.astro = self.data['astro']
         self.day_stats = self.data['day']
@@ -89,8 +90,8 @@ class WData:
     """Access to the main classes, call hourly data via \"HourlyW\""""
     def __init__(self, app):
         self.gen_data = Data(app)
-        self.weather_now = WNow(self.gen_data.data)
-        self.forcast_today = ForcastTday(self.gen_data.data)
+        self.weather_now = WNow(app, self.gen_data.data)
+        self.forcast_today = ForcastTday(app, self.gen_data.data)
 
 
 

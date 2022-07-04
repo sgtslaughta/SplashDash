@@ -8,9 +8,9 @@ class MainPanel:
     """Main weather panel class"""
     def __init__(self, app):
         self.app = app
-        self.w_panel = tk.Frame(app.main_panel, highlightbackground="black", highlightthickness=1)
+        self.w_panel = tk.Frame(app.main_panel)
         self.w_panel.pack(fill=tk.BOTH, expand=1)
-        self.bg = tk.Label(self.w_panel)
+        self.bg = tk.Canvas(self.w_panel, bg='black', height=app.window.winfo_screenwidth()/4.5, width=app.window.winfo_screenheight())
         self.bg.place(x=-3, y=-2)
         self.bg_ph = None
         self.bg_update()
@@ -22,9 +22,9 @@ class MainPanel:
         else:
             self.bg_ph = Image.open("lib/img/nighttime.jpg")
         self.bg_ph = self.bg_ph.resize(
-            (int(self.app.window.winfo_screenwidth() / 2.9), int(self.app.window.winfo_screenheight() / 3)))
+            (int(self.app.window.winfo_screenwidth()*.34), int(self.app.window.winfo_screenheight()*.35)))
         self.bg_ph = ImageTk.PhotoImage(self.bg_ph)
-        self.bg.config(image=self.bg_ph)
+        self.bg.create_image(0, 0, anchor=tk.N+tk.W, image=self.bg_ph)
         self.bg.after(60000*15, self.bg_update)
 
 
@@ -33,23 +33,38 @@ class WNowPanel:
         self.m_panel = m_panel
         self.app = app
         self.w_now_frame = tk.Frame(self.m_panel.w_panel)
-        self.w_now_frame.grid(row=0, column=0, padx=20, pady=20)
-        self.w_now_t_panel = tk.Canvas(self.w_now_frame)
-        # self.w_now_t_panel.create_rectangle(50, 0, 100, 0, fill='black')
-        self.w_now_t_panel.pack(fill=tk.BOTH, expand=1)
-        self.bg_holder = []
-        print(self.w_now_frame.winfo_geometry())
-        #self.create_rectangle(1, 80, 100, 120, fill='black', alpha=.1)
+        self.w_now_frame.grid(row=0, column=0, padx=30, pady=30)
+        #self.w_now_t_panel = tk.Canvas(self.w_now_frame, bg='black')
+        #self.w_now_t_panel.grid()
+        self.bg = None
+        self.fill_canvas()
+        self.time_label = tk.Label(self.w_now_frame, text="Time: ")
+        self.time_val = tk.Label(self.w_now_frame, text=self.app.wdata.gen_data.loc_time.get())
+        self.cur_temp_label = tk.Label
+        self.label_list = {'Time: ': self.app.wdata.gen_data.loc_time, 'Location:': self.app.wdata.gen_data.city,
+                           'Current Temp: ': self.app.wdata.weather_now.temp_f, 'Conditions: ':
+                           self.app.wdata.weather_now.condition, 'Real Feel: ': self.app.wdata.weather_now.real_feel}
+        self.label_obj = {}
+        self.grid_all(self.label_list)
 
-    def create_rectangle(self, x1, y1, x2, y2, **kwargs):
-        if 'alpha' in kwargs:
-            alpha = int(kwargs.pop('alpha') * 255)
-            fill = kwargs.pop('fill')
-            fill = self.w_now_t_panel.winfo_rgb(fill) + (alpha,)
-            image = Image.new('RGBA', (x2 - x1, y2 - y1), fill)
-            self.bg_holder.append(ImageTk.PhotoImage(image))
-            self.w_now_t_panel.create_image(x1, y1, image=self.bg_holder[-1], anchor='nw')
-        self.w_now_t_panel.create_rectangle(x1, y1, x2, y2, **kwargs)
+    def grid_all(self, label_list):
+        cnt = 0
+        for key in label_list:
+            print(key, label_list[key].get())
+            self.label_obj[f"{key}_label"] = tk.Label(self.w_now_frame, text=key)
+            self.label_obj[f"{key}_val"]  = tk.Label(self.w_now_frame, text=self.label_list[key].get())
+            self.label_obj[f"{key}_label"].grid(row=cnt, column=0, padx=5, pady=5, sticky=tk.W)
+            self.label_obj[f"{key}_val"].grid(row=cnt, column=1, padx=5, pady=5)
+            cnt += 1
+
+    def fill_canvas(self):
+        self.bg = Image.open("lib/img/black_rec.png")
+        w = int(self.m_panel.bg_ph.width()/2.1)
+        h = int(self.m_panel.bg_ph.height()*.86)
+        self.bg = self.bg.resize((w, h))
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.m_panel.bg.create_image(20, 20, anchor=tk.N+tk.W, image=self.bg)
+
 
 class ForcastPanel:
     def __init__(self, app, m_panel):
