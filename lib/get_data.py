@@ -35,15 +35,15 @@ class WNow:
         self.temp_c = self.data['temp_c']
         self.temp_f = tk.StringVar(main.window, str(self.data['temp_f']) + '°F')
         self.condition = tk.StringVar(main.window, self.data['condition']['text'])
-        self.icon_loc = self.data['condition']['icon']
-        self.wind = self.data['wind_mph']
-        self.wind_dir = self.data['wind_dir']
-        self.precip = self.data['precip_in']
-        self.humidity = self.data['humidity']
+        self.icon_loc = tk.StringVar(main.window, self.data['condition']['icon'])
+        self.wind = tk.StringVar(main.window, str(self.data['wind_mph']) + ' Mph')
+        self.wind_dir = tk.StringVar(main.window, self.data['wind_dir'])
+        self.precip = tk.StringVar(main.window, str(self.data['precip_in']) + 'in')
+        self.humidity = tk.StringVar(main.window, str(self.data['humidity']) + '%')
         self.real_feel = tk.StringVar(main.window, str(self.data['feelslike_f']) + '°F')
-        self.vis_m = self.data['vis_miles']
-        self.uv = self.data['uv']
-        self.is_day = self.data['is_day']
+        self.vis_m = tk.StringVar(main.window, self.data['vis_miles'])
+        self.uv = tk.StringVar(main.window, self.data['uv'])
+        self.is_day = tk.IntVar(main.window, self.data['is_day'])
 
 
 class ForcastTday:

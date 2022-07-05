@@ -1,7 +1,7 @@
 import tkinter as tk
 from datetime import datetime, date
 from PIL import ImageTk, Image
-from os import path, remove
+from . import common
 
 
 class MainPanel:
@@ -10,19 +10,19 @@ class MainPanel:
         self.app = app
         self.w_panel = tk.Frame(app.main_panel)
         self.w_panel.pack(fill=tk.BOTH, expand=1)
-        self.bg = tk.Canvas(self.w_panel, bg='black', height=app.window.winfo_screenwidth()/4.5, width=app.window.winfo_screenheight())
+        self.bg = tk.Canvas(self.w_panel, bg='black', height=app.window.winfo_screenheight(), width=app.window.winfo_screenwidth())
         self.bg.place(x=-3, y=-2)
         self.bg_ph = None
         self.bg_update()
 
     def bg_update(self):
         """Check the day/night status every 15 minutes and set app background accordingly"""
-        if self.app.wdata.weather_now.is_day == 1:
+        if self.app.wdata.weather_now.is_day.get() == 1:
             self.bg_ph = Image.open("lib/img/daytime.jpg")
         else:
             self.bg_ph = Image.open("lib/img/nighttime.jpg")
         self.bg_ph = self.bg_ph.resize(
-            (int(self.app.window.winfo_screenwidth()*.34), int(self.app.window.winfo_screenheight()*.35)))
+            (int(self.app.window.winfo_screenwidth()*.35), int(self.app.window.winfo_screenheight()*.35)))
         self.bg_ph = ImageTk.PhotoImage(self.bg_ph)
         self.bg.create_image(0, 0, anchor=tk.N+tk.W, image=self.bg_ph)
         self.bg.after(60000*15, self.bg_update)
@@ -42,20 +42,12 @@ class WNowPanel:
         self.time_val = tk.Label(self.w_now_frame, text=self.app.wdata.gen_data.loc_time.get())
         self.cur_temp_label = tk.Label
         self.label_list = {'Time: ': self.app.wdata.gen_data.loc_time, 'Location:': self.app.wdata.gen_data.city,
-                           'Current Temp: ': self.app.wdata.weather_now.temp_f, 'Conditions: ':
-                           self.app.wdata.weather_now.condition, 'Real Feel: ': self.app.wdata.weather_now.real_feel}
+                           'Current Temp: ': self.app.wdata.weather_now.temp_f, 'Real Feel: ': self.app.wdata.weather_now.real_feel,
+                           'Conditions: ': self.app.wdata.weather_now.condition, 'Precipitation: ': self.app.wdata.weather_now.precip,
+                           'Humidity: ': self.app.wdata.weather_now.humidity, 'Wind: ': self.app.wdata.weather_now.wind,
+                           'Wind Direction: ': self.app.wdata.weather_now.wind_dir}
         self.label_obj = {}
         self.grid_all(self.label_list)
-
-    def grid_all(self, label_list):
-        cnt = 0
-        for key in label_list:
-            print(key, label_list[key].get())
-            self.label_obj[f"{key}_label"] = tk.Label(self.w_now_frame, text=key)
-            self.label_obj[f"{key}_val"]  = tk.Label(self.w_now_frame, text=self.label_list[key].get())
-            self.label_obj[f"{key}_label"].grid(row=cnt, column=0, padx=5, pady=5, sticky=tk.W)
-            self.label_obj[f"{key}_val"].grid(row=cnt, column=1, padx=5, pady=5)
-            cnt += 1
 
     def fill_canvas(self):
         self.bg = Image.open("lib/img/black_rec.png")
@@ -64,6 +56,49 @@ class WNowPanel:
         self.bg = self.bg.resize((w, h))
         self.bg = ImageTk.PhotoImage(self.bg)
         self.m_panel.bg.create_image(20, 20, anchor=tk.N+tk.W, image=self.bg)
+
+    def grid_all(self, label_list):
+        cnt = 0
+        for key in label_list:
+            print(key)
+            if key == 'Conditions: ':
+                self.label_obj[f"{key}frame"] = tk.Frame(self.w_now_frame)
+                self.label_obj[f"{key}frame"].grid_columnconfigure(1, weight=1)
+                self.label_obj[f"{key}_label"] = tk.Label(self.label_obj[f"{key}frame"], text=key, justify=tk.LEFT,
+                                                          anchor="w",
+                                                          width=int((self.bg.width() / self.app.m_len) / 2.21))
+                self.label_obj[f"{key}dual_frame_ph"] = tk.Frame(self.label_obj[f"{key}frame"], bg="blue",
+                                                              width=int((self.bg.width() / self.app.m_len) / 2.21))
+                self.label_obj[f"{key}dual_frame"] = tk.Frame(self.label_obj[f"{key}dual_frame_ph"])
+                self.label_obj[f"{key}_val"] = tk.Label(self.label_obj[f"{key}dual_frame"], text=self.label_list[key].get())
+                url = common.get_web_image('https://' + self.app.wdata.weather_now.icon_loc.get()[2:])
+                self.label_obj[f"{key}_canvas"] = tk.Canvas(self.label_obj[f"{key}dual_frame"], width=url.width() - 4, height=url.height() - 4)
+
+                c_h = 28
+                c_w = 28
+                self.label_obj[f"{key}_canvas"].create_image(c_h, c_w, anchor=tk.CENTER, image=url)
+
+                self.label_obj[f"{key}frame"].grid(row=cnt, column=0, padx=5, sticky=tk.W + tk.E)
+
+                self.label_obj[f"{key}dual_frame_ph"].grid(row=0, column=1)
+                self.label_obj[f"{key}dual_frame"].pack(fill=tk.BOTH, expand=1)
+
+                self.label_obj[f"{key}_label"].grid(row=0, column=0, padx=5, sticky=tk.W)
+                self.label_obj[f"{key}_val"].grid(row=0, column=0, sticky=tk.E)
+                self.label_obj[f"{key}_canvas"].grid(row=0, column=1, sticky=tk.E)
+
+            else:
+                self.label_obj[f"{key}frame"] = tk.Frame(self.w_now_frame)
+                self.label_obj[f"{key}_label"] = tk.Label(self.label_obj[f"{key}frame"], text=key, justify=tk.LEFT,
+                                                          anchor="w", width=int((self.bg.width() / self.app.m_len)/2.21))
+                self.label_obj[f"{key}_val"] = tk.Label(self.label_obj[f"{key}frame"], text=self.label_list[key].get(),
+                                                        width=int((self.bg.width() / self.app.m_len)/2.21))
+
+                self.label_obj[f"{key}frame"].grid(row=cnt, column=0, padx=5, sticky=tk.W + tk.E)
+                self.label_obj[f"{key}_label"].grid(row=0, column=0, padx=5, sticky=tk.W)
+                self.label_obj[f"{key}_val"].grid(row=0, column=1, padx=5)
+            cnt += 1
+
 
 
 class ForcastPanel:
