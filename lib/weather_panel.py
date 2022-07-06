@@ -45,7 +45,7 @@ class WNowPanel:
                            'Current Temp: ': self.app.wdata.weather_now.temp_f, 'Real Feel: ': self.app.wdata.weather_now.real_feel,
                            'Conditions: ': self.app.wdata.weather_now.condition, 'Precipitation: ': self.app.wdata.weather_now.precip,
                            'Humidity: ': self.app.wdata.weather_now.humidity, 'Wind: ': self.app.wdata.weather_now.wind,
-                           'Wind Direction: ': self.app.wdata.weather_now.wind_dir}
+                           'Wind Direction: ': self.app.wdata.weather_now.wind_dir, 'UV Rating': self.app.wdata.weather_now.uv}
         self.label_obj = {}
         self.grid_all(self.label_list)
 
@@ -100,10 +100,22 @@ class WNowPanel:
             cnt += 1
 
 
-
 class ForcastPanel:
     def __init__(self, app, m_panel):
-        pass
+        self.m_panel = m_panel
+        self.app = app
+        self.w_now_frame = tk.Frame(self.m_panel.w_panel)
+        self.w_now_frame.grid(row=0, column=1, padx=30, pady=30)
+        self.bg = None
+        self.fill_canvas()
+
+    def fill_canvas(self):
+        self.bg = Image.open("lib/img/black_rec.png")
+        w = int(self.m_panel.bg_ph.width()/2.5)
+        h = int(self.m_panel.bg_ph.height()*.86)
+        self.bg = self.bg.resize((w, h))
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.m_panel.bg.create_image(180+w, 20, anchor=tk.N+tk.W, image=self.bg)
 
 
 class ConstructWPanel:

@@ -42,7 +42,7 @@ class WNow:
         self.humidity = tk.StringVar(main.window, str(self.data['humidity']) + '%')
         self.real_feel = tk.StringVar(main.window, str(self.data['feelslike_f']) + '°F')
         self.vis_m = tk.StringVar(main.window, self.data['vis_miles'])
-        self.uv = tk.StringVar(main.window, self.data['uv'])
+        self.uv = tk.StringVar(main.window, str(self.data['uv']) +"/10.0")
         self.is_day = tk.IntVar(main.window, self.data['is_day'])
 
 
