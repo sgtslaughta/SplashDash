@@ -49,6 +49,7 @@ class WNow:
 class ForcastTday:
     """Overview of today's forcast"""
     def __init__(self, main, app):
+        self.app = app
         self.data = app['forecast']['forecastday'][0]
         self.astro = self.data['astro']
         self.day_stats = self.data['day']

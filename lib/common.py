@@ -13,3 +13,9 @@ def get_web_image(url="http://someimage.png"):
     if os.path.exists(f"{cwd}/lib/img/tmp/{url_fn[-1]}"):
         os.remove(f"{cwd}/lib/img/tmp/{url_fn[-1]}")
     return image
+
+
+def get_web_image_resize(hgt, wdth, url="http://someimage.png"):
+    img = Image.open(requests.get(url, stream=True).raw)
+    img = img.resize((int(img.height/hgt), int(img.width/wdth)), Image.ANTIALIAS)
+    return ImageTk.PhotoImage(img)

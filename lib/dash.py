@@ -25,8 +25,9 @@ class App:
         self.font = tkfont.Font(family="Consolas", size=10, weight="normal")
         self.m_len = self.font.measure('0')
         self.m_height = tkfont.Font(font='Consolas').metrics('linespace')
-        self.app_w = round((self.window.winfo_screenwidth() / self.m_len) / 3)
         self.app_h = round(((self.window.winfo_screenheight() / self.m_height) / 3) * 1.1)
+        self.app_w = round((self.app_h * 1.5))
+
         self.set_window_size()
         self.menu = menu.Menu(self)
         self.main_panel = tk.Frame(self.window, bg="green3")
