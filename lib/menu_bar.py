@@ -20,7 +20,7 @@ class Menu:
         # Add commands for each
         self.edit_menu.add_command(label="Edit City/Location")
         self.edit_menu.entryconfig("Edit City/Location", state="disabled", command=lambda: [self.get_loc()])
-        self.edit_menu.add_command(label="Add API Key", command=lambda: [self.get_api(app)])
+        self.edit_menu.add_command(label="Add API Key", command=lambda: [self.get_api()])
         self.edit_menu.add_command(label="Open Detailed Info...")
         self.file_menu.add_command(label="Quit", command=lambda: [app.kill_app()])
         self.about_menu.add_command(label="About...", command=lambda: [self.open_about()])
@@ -30,17 +30,19 @@ class Menu:
         self.menu_bar.add_cascade(label="Edit", menu=self.edit_menu)
         self.menu_bar.add_cascade(label="About", menu=self.about_menu)
 
-        self.check_api()
+        self.after = None
+
+        self.check_api_set()
 
     # Function to enable location entry window only after API has been entered
-    def check_api(self):
+    def check_api_set(self):
         if self.app.api_key_val.get() != "":
             self.edit_menu.entryconfig("Edit City/Location", state=tk.NORMAL)
-        self.edit_menu.after(1000, self.check_api)
+        self.after = self.edit_menu.after(1000, self.check_api_set)
 
     # Create the API entry window
-    def get_api(self, app):
-        ApiEntry(self, app)
+    def get_api(self):
+        ApiEntry(self, self.app)
 
     # Create the location entry window
     def get_loc(self):
@@ -61,6 +63,7 @@ class ApiEntry:
         self.p_win = tk.Toplevel()
         self.p_win.title("Enter API Key")
         self.p_win.lift()
+        self.after = None
 
         # Create the main frame
         self.entry_frame = tk.Frame(self.p_win)
@@ -93,7 +96,8 @@ class ApiEntry:
         """Function to check the API format against regex, enable OK button once correct"""
         if match("^[a-zA-Z0-9]{30}", self.api_entry.get()):
             self.ok_button.config(state=tk.NORMAL)
-        self.ok_button.after(500, self.check_api)
+        self.after = self.ok_button.after(500, self.check_api)
+
 
 
 class LocWin:

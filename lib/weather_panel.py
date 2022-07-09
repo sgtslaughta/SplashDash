@@ -2,7 +2,15 @@ import tkinter as tk
 from datetime import datetime, date
 from PIL import ImageTk, Image
 from . import common
-import requests
+import matplotlib
+matplotlib.use('TkAgg')
+from matplotlib.figure import Figure
+from matplotlib import pyplot
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg,
+    NavigationToolbar2Tk,
+
+)
 
 
 class MainPanel:
@@ -116,8 +124,9 @@ class ForcastPanel:
         self.bg = None
         self.fill_canvas()
         self.obj_dic = {}
-        self.grid_all()
         self.img_ph = None
+        self.graph_img = {}
+        self.grid_all()
 
     def fill_canvas(self):
         x = int((self.m_panel.bg_day_night.width() / 2))
@@ -129,19 +138,29 @@ class ForcastPanel:
         r_cnt = 0
         cnt = int((self.app.wdata.gen_data.loc_time.get().split()[1]).split(':')[0])
         self.hr_data = self.hr_data[cnt]
+        hour_to_temp = [[], []]
+        hour_to_precip = [[], []]
         while cnt < 23:
-            self.obj_dic[f"hr{cnt}_icon"] = common.get_web_image_resize(2, 2, 'http:' + self.hr_data['condition']['icon'])
+            self.obj_dic[f"hr{cnt}_icon"] = common.get_web_image_resize(2.2, 2.2, 'http:' + self.hr_data['condition']['icon'])
             self.obj_dic[f"hr{cnt}_frame"] = tk.Frame(self.w_now_frame)
             self.obj_dic[f"hr{cnt}_t_label"] = tk.Label(self.obj_dic[f"hr{cnt}_frame"], text=f"{self.hr_data['time'].split()[1]}")
+            self.obj_dic[f"hr{cnt}_t_label"].configure(font=('Consolas', 8))
             self.obj_dic[f"hr{cnt}_canvas"] = tk.Canvas(self.obj_dic[f"hr{cnt}_frame"], width=self.obj_dic[f"hr{cnt}_icon"].width(), height=self.obj_dic[f"hr{cnt}_icon"].height())
             self.obj_dic[f"hr{cnt}_canvas"].create_image(16, 18, image=self.obj_dic[f"hr{cnt}_icon"])
             self.obj_dic[f"hr{cnt}_d_label"] = tk.Label(self.obj_dic[f"hr{cnt}_frame"], justify=tk.LEFT, width=self.ratio)
-            self.obj_dic[f"hr{cnt}_d_label"].config(text=f"{self.hr_data['temp_f']}°F Precip: {self.hr_data['precip_in']}In/{self.hr_data['chance_of_rain']}%")
+            self.obj_dic[f"hr{cnt}_d_label"].config(text=f"{self.hr_data['temp_f']}°F / {self.hr_data['chance_of_rain']}%")
+            self.obj_dic[f"hr{cnt}_d_label"].config(font=('Consolas', 8))
 
             self.obj_dic[f"hr{cnt}_frame"].grid(row=r_cnt, column=0)
             self.obj_dic[f"hr{cnt}_t_label"].grid(row=r_cnt, column=0, sticky=tk.W)
             self.obj_dic[f"hr{cnt}_d_label"].grid(row=r_cnt, column=1, sticky=tk.W)
             self.obj_dic[f"hr{cnt}_canvas"].grid(row=r_cnt, column=2)
+
+            hour_to_temp[0].append((f"{self.hr_data['time'].split()[1]}").split(':')[0])
+            hour_to_temp[1].append(float(self.hr_data['temp_f']))
+            hour_to_precip[0].append((f"{self.hr_data['time'].split()[1]}").split(':')[0])
+            hour_to_precip[1].append(float(self.hr_data['precip_in']))
+
             if cnt == 22 and day < 1:
                 cnt = 0
                 self.hr_data = self.app.wdata.gen_data.data['forecast']['forecastday'][1]
@@ -151,6 +170,19 @@ class ForcastPanel:
             cnt += 1
             r_cnt += 1
             self.hr_data = self.app.wdata.forcast_today.data['hour'][cnt]
+
+        self.graph_img['temp_graph'] = common.make_graph_of_size(clr1='yellow', clr2='red', hlst=hour_to_temp[0], tlst=hour_to_temp[1],
+                                        scale=self.m_panel.bg_ph.width() - 40)
+        print(hour_to_precip)
+        self.graph_img['precip_graph'] = common.make_graph_of_size(clr1='blue', clr2='green', hlst=hour_to_precip[0], tlst=hour_to_precip[1],
+                                        scale=self.m_panel.bg_ph.width() - 40)
+
+        graph_canvas = tk.Canvas(self.w_now_frame, width=self.graph_img['temp_graph'].width(), height=self.graph_img['temp_graph'].height())
+        self.w_now_frame.grid_columnconfigure(0, weight=1)
+        graph_canvas.create_image(190, 48, image=self.graph_img['temp_graph'])
+        graph_canvas.create_image(190, 48, image=self.graph_img['precip_graph'])
+        graph_canvas.config(height=self.graph_img['precip_graph'].height())
+        graph_canvas.grid(row=r_cnt, columnspan=2)
 
 
 class ConstructWPanel:
