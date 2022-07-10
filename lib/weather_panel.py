@@ -1,6 +1,6 @@
 import tkinter as tk
 from datetime import datetime, date
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageDraw, ImageFont
 from . import common
 import matplotlib
 matplotlib.use('TkAgg')
@@ -122,11 +122,12 @@ class ForcastPanel:
         self.hr_data = self.app.wdata.forcast_today.data['hour']
         self.ratio = round((self.m_panel.bg_ph.width() / self.app.m_len) / 1.5)
         self.bg = None
-        self.fill_canvas()
+        #self.fill_canvas()
         self.obj_dic = {}
         self.img_ph = None
         self.graph_img = {}
-        self.grid_all()
+        #self.grid_all()
+        self.draw_text()
 
     def fill_canvas(self):
         x = int((self.m_panel.bg_day_night.width() / 2))
@@ -156,10 +157,10 @@ class ForcastPanel:
             self.obj_dic[f"hr{cnt}_d_label"].grid(row=r_cnt, column=1, sticky=tk.W)
             self.obj_dic[f"hr{cnt}_canvas"].grid(row=r_cnt, column=2)
 
-            hour_to_temp[0].append((f"{self.hr_data['time'].split()[1]}").split(':')[0])
+            hour_to_temp[0].append(f"{self.hr_data['time'].split()[1]}".split(':')[0])
             hour_to_temp[1].append(float(self.hr_data['temp_f']))
-            hour_to_precip[0].append((f"{self.hr_data['time'].split()[1]}").split(':')[0])
-            hour_to_precip[1].append(float(self.hr_data['precip_in']))
+            hour_to_precip[0].append(f"{self.hr_data['time'].split()[1]}".split(':')[0])
+            hour_to_precip[1].append(float(self.hr_data['chance_of_rain']))
 
             if cnt == 22 and day < 1:
                 cnt = 0
@@ -173,7 +174,7 @@ class ForcastPanel:
 
         self.graph_img['temp_graph'] = common.make_graph_of_size(clr1='yellow', clr2='red', hlst=hour_to_temp[0], tlst=hour_to_temp[1],
                                         scale=self.m_panel.bg_ph.width() - 40)
-        print(hour_to_precip)
+
         self.graph_img['precip_graph'] = common.make_graph_of_size(clr1='blue', clr2='green', hlst=hour_to_precip[0], tlst=hour_to_precip[1],
                                         scale=self.m_panel.bg_ph.width() - 40)
 
@@ -184,6 +185,26 @@ class ForcastPanel:
         graph_canvas.config(height=self.graph_img['precip_graph'].height())
         graph_canvas.grid(row=r_cnt, columnspan=2)
 
+    def draw_text(self):
+        cnt = int((self.app.wdata.gen_data.loc_time.get().split()[1]).split(':')[0])
+        image = Image.open("lib/img/black_rec.png")
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype("lib/Roboto-MediumItalic.ttf", size=20)
+        print(font.getsize('Tj'))
+        x = 10
+        while cnt < 23:
+            draw.text((10, x), f"{self.hr_data[cnt]['temp_f']}°F / {self.hr_data[cnt]['chance_of_rain']}%", font=font, fill=(255, 255, 255, 175))
+            self.obj_dic[f"hr{cnt}_icon"] = common.get_web_image_resize(2, 2, 'http:' + self.hr_data[cnt]['condition']['icon'])
+            self.m_panel.bg.create_image(560, x+8, anchor=tk.N + tk.W, image=self.obj_dic[f"hr{cnt}_icon"])
+            x = x + font.getsize('Tj')[1]
+            cnt +=1
+        #image.show()
+        self.graph_img['text'] = ImageTk.PhotoImage(image)
+        x = int((self.m_panel.bg_day_night.width() / 2))
+        y = int(self.m_panel.bg.coords(self.m_panel.bg_frame_left)[1])
+        self.m_panel.bg_frame_right = self.m_panel.bg.create_image(x, y, anchor=tk.N + tk.W, image=self.graph_img['text'])
+
+
 
 class ConstructWPanel:
     def __init__(self, app):
@@ -191,40 +212,6 @@ class ConstructWPanel:
         self.wnow_panel = WNowPanel(app, self.m_panel)
         self.fc_panel = ForcastPanel(app, self.m_panel)
 
-
-
-
-
-
-
-
-        # Create weather icon section
-        #self.icon_frame = tk.Frame(self.w_panel, bg="black", highlightbackground="black", highlightthickness=1)
-        #self.icon_frame.grid(row=0, column=0, padx=5, pady=5)
-        # self.icon_canvas = tk.Canvas(self.icon_frame)
-        # self.icon_canvas.pack(fill=tk.BOTH, expand=1)
-
-        # cwd = os.getcwd()
-        # img = Image.open(os.path.join(cwd, 'lib/img/001lighticons-08.png'))
-        # self.new_img = img.resize((int(app.window.winfo_screenwidth() / 5), int(app.window.winfo_screenheight() / 3.5)))
-        # # self.new_img = self.new_img.convert('L')
-        # # self.new_img = PIL.ImageOps.invert(self.new_img)
-        # # self.new_img = self.new_img.convert('1')
-        # self.w_icon = ImageTk.PhotoImage(self.new_img)
-        # self.icon_canvas.create_image(200, 140, image=self.w_icon)
-        # #self.p_holder = tk.Label(self.icon_frame, image=self.w_icon)
-        # #width = int(app.app_w * .74), height=int(app.app_h * .90)
-        # #self.p_holder.pack(fill=tk.BOTH, expand=1)
-    #     self.data_frame = tk.Frame(self.w_panel)
-    #     self.data_frame.grid(row=0, column=1)
-    #
-    #     # Create the city section
-    #     self.city_frame = tk.Frame(self.data_frame)
-    #     self.city_frame.grid(row=0, column=1)
-    #     self.city_label = tk.Label(self.city_frame, text="City: ", bg="grey")
-    #     self.city_label.grid(row=0, column=0, sticky=tk.W)
-    #     self.city_text = tk.Label(self.city_frame, text="Hanover", bg="yellow2")
-    #     self.city_text.grid(row=0, column=1)
     #
     #     # Create the time section
     #     self.time_frame = tk.Frame(self.data_frame)
@@ -237,17 +224,7 @@ class ConstructWPanel:
     #     self.time_now_var.set(f"{self.time_now} {self.date_now}")
     #     self.time_val = tk.Label(self.time_frame, text=self.time_now_var.get())
     #     self.time_val.grid(row=0, column=1)
-    #
-    #     # Create the real feel section
-    #     self.real_feel_var = tk.StringVar()
-    #     self.real_feel_var.set(str(app.wdata.weather_now.real_feel) + "°F")
-    #     self.real_feel_frame = tk.Frame(self.data_frame)
-    #     self.real_feel_label = tk.Label(self.real_feel_frame, text="Real Feel: ")
-    #     self.real_feel_data = tk.Label(self.real_feel_frame, text=self.real_feel_var.get())
-    #     self.real_feel_frame.grid(row=2, column=1, sticky=tk.W+tk.E)
-    #     self.real_feel_label.grid(row=0, column=0, sticky=tk.W)
-    #     self.real_feel_data.grid(row=0, column=1, sticky=tk.E)
-    #     self.update_time()
+
     #
     # def update_time(self):
     #     self.time_now = datetime.now().strftime("%H:%M:%S")

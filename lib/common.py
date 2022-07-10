@@ -4,15 +4,21 @@ import os
 import matplotlib.pyplot as plt
 
 
+def sv_rm_file(file, img):
+    if not os.path.exists('lib/img/tmp'):
+        os.mkdir('lib/img/tmp')
+    img.save(f'lib/img/tmp/{file}')
+    img = ImageTk.PhotoImage(img)
+    if os.path.exists(f'lib/img/tmp/{file}'):
+        os.remove(f'lib/img/tmp/{file}')
+    return img
+
+
 def get_web_image(url="http://someimage.png"):
     """Pull an image from a given URL and set it to a ImageTK.PhotoImage object"""
     img = Image.open(requests.get(url, stream=True).raw)
-    cwd = os.getcwd()
     url_fn = url.split('/')
-    img.save(f"{cwd}/lib/img/tmp/{url_fn[-1]}")
-    image = ImageTk.PhotoImage(img)
-    if os.path.exists(f"{cwd}/lib/img/tmp/{url_fn[-1]}"):
-        os.remove(f"{cwd}/lib/img/tmp/{url_fn[-1]}")
+    image = sv_rm_file(f"{url_fn[-1]}", img)
     return image
 
 
@@ -39,6 +45,8 @@ def make_graph_of_size(clr1='red', clr2='green', hlst=(), tlst=(), scale=0):
     img = Image.open('lib/img/tmp/test.png')
     width, height = img.size
     ratio = int(width / scale)
+    if not os.path.exists('lib/img/tmp'):
+        os.mkdir('lib/img/tmp')
     img = img.resize((int(scale), int(height / ratio) - 40), Image.ANTIALIAS)
     if os.path.exists('lib/img/tmp/test.png'):
         os.remove('lib/img/tmp/test.png')
