@@ -40,6 +40,6 @@ class App:
 
     def set_window_size(self):
         """Get the users screen size and set the app window size to roughly 1/3 h:w"""
-        self.window.geometry(f"{int(self.window.winfo_screenwidth() / 3) + 10}x{int(self.window.winfo_screenheight() / 3)}")
+        self.window.geometry(f"{int(self.window.winfo_screenheight() * .95)}x{int(self.window.winfo_screenheight() / 3)}")
         self.window.lift()
         # self.window.resizable(False, False)

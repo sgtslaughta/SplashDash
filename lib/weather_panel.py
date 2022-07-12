@@ -4,6 +4,7 @@ from PIL import ImageTk, Image, ImageDraw, ImageFont
 from . import common
 import matplotlib
 matplotlib.use('TkAgg')
+from requests import get as r_get
 from matplotlib.figure import Figure
 from matplotlib import pyplot
 from matplotlib.backends.backend_tkagg import (
@@ -191,12 +192,22 @@ class ForcastPanel:
         draw = ImageDraw.Draw(image)
         font = ImageFont.truetype("lib/Roboto-MediumItalic.ttf", size=20)
         print(font.getsize('Tj'))
-        x = 10
+        x = 20
         while cnt < 23:
-            draw.text((10, x), f"{self.hr_data[cnt]['temp_f']}°F / {self.hr_data[cnt]['chance_of_rain']}%", font=font, fill=(255, 255, 255, 175))
-            self.obj_dic[f"hr{cnt}_icon"] = common.get_web_image_resize(2, 2, 'http:' + self.hr_data[cnt]['condition']['icon'])
-            self.m_panel.bg.create_image(560, x+8, anchor=tk.N + tk.W, image=self.obj_dic[f"hr{cnt}_icon"])
-            x = x + font.getsize('Tj')[1]
+            txt = f"{cnt}:00 {self.hr_data[cnt]['temp_f']}°F {self.hr_data[cnt]['chance_of_rain']}%"
+            wdth = font.getsize(txt)
+            print(wdth)
+            mk = 40
+            for i in txt.split():
+                draw.text((mk, x), i, font=font, fill=(255, 255, 255, 175))
+                mk += 150
+            #self.obj_dic[f"hr{cnt}_icon"] = common.get_web_image_resize(2, 2, 'http:' + self.hr_data[cnt]['condition']['icon'])
+            url = 'http:' + self.hr_data[cnt]['condition']['icon']
+            img = Image.open(r_get(url, stream=True).raw)
+            img = img.resize((int(img.height * .5), int(img.width * .5)), Image.ANTIALIAS)
+            image.paste(img, (mk, x), mask=img)
+            #self.m_panel.bg.create_image(560, x+8, anchor=tk.N + tk.W, image=self.obj_dic[f"hr{cnt}_icon"])
+            x = x + font.getsize('Tj')[1] + 5
             cnt +=1
         #image.show()
         self.graph_img['text'] = ImageTk.PhotoImage(image)
